@@ -17,8 +17,10 @@ on:
         required: false
         default: "moneyman:*"
   schedule:
-    # In Israel: [12:05, 00:05] or [13:05, 01:05] on DST
-    - cron: "5 10,22 * * *"
+    # Shabbat-observant (UTC): Sun-Thu 10:05, Fri 07:05 only, nights 22:05 except Friday night
+    - cron: "5 10 * * 0-4"
+    - cron: "5 7 * * 5"
+    - cron: "5 22 * * 0-4,6"
 env:
   REGISTRY: ghcr.io
 jobs:

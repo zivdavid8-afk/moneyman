@@ -1,0 +1,31 @@
+name: Pepper
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Shabbat-observant (UTC): Sun-Thu 10:20, Fri 07:20 only, nights 22:20 except Friday night
+    - cron: "20 10 * * 0-4"
+    - cron: "20 7 * * 5"
+    - cron: "20 22 * * 0-4,6"
+
+permissions:
+  contents: read
+
+jobs:
+  pepper:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: pip install --quiet "israeli-finance-scrapers==0.9.4" gspread google-auth tzdata
+      - name: Sync Pepper to the sheet
+        run: python scripts/pepper_sync.py
+        env:
+          PEPPER_PHONE: ${{ secrets.PEPPER_PHONE }}
+          PEPPER_PASSWORD: ${{ secrets.PEPPER_PASSWORD }}
+          PEPPER_TOKEN: ${{ secrets.PEPPER_TOKEN }}
+          MONEYMAN_CONFIG: ${{ secrets.MONEYMAN_CONFIG }}
